@@ -19,6 +19,34 @@ end
 vim.opt.rtp:prepend(lazypath)
 vim.opt.termguicolors = true
 
+-- Share Neovim's clipboard with the Windows clipboard under WSL.
+if vim.fn.has("wsl") == 1
+    and vim.fn.executable("clip.exe") == 1
+    and vim.fn.executable("powershell.exe") == 1 then
+  local paste_command = {
+    "powershell.exe",
+    "-NoLogo",
+    "-NoProfile",
+    "-Command",
+    "$x = Get-Clipboard -Raw; if ($null -ne $x) { [Console]::Out.Write($x.Replace(\"`r\", \"\")) }",
+  }
+
+  vim.g.clipboard = {
+    name = "WslClipboard",
+    copy = {
+      ["+"] = "clip.exe",
+      ["*"] = "clip.exe",
+    },
+    paste = {
+      ["+"] = paste_command,
+      ["*"] = paste_command,
+    },
+    cache_enabled = 0,
+  }
+
+  vim.opt.clipboard = "unnamedplus"
+end
+
 -- Startup cost shown on the dashboard. lazy.nvim's own stats.startuptime is
 -- still zero at VimEnter, when the dashboard is built, so the elapsed time is
 -- measured here instead.
