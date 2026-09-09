@@ -28,7 +28,7 @@ if vim.fn.has("wsl") == 1
     "-NoLogo",
     "-NoProfile",
     "-Command",
-    "$x = Get-Clipboard -Raw; if ($null -ne $x) { [Console]::Out.Write($x.Replace(\"`r\", \"\")) }",
+    "$x = Get-Clipboard -Raw; if ($null -ne $x) { $bytes = [System.Text.Encoding]::UTF8.GetBytes($x.Replace(\"`r\", \"\")); [Console]::OpenStandardOutput().Write($bytes, 0, $bytes.Length) }",
   }
 
   vim.g.clipboard = {
