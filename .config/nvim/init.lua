@@ -123,7 +123,7 @@ require("lazy").setup({
         capabilities = require("blink.cmp").get_lsp_capabilities(),
       })
 
-      for _, server in ipairs({ "pyright", "rust_analyzer", "marksman" }) do
+      for _, server in ipairs({ "pyright", "rust_analyzer", "marksman", "clangd" }) do
         vim.lsp.enable(server)
       end
     end,
