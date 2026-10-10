@@ -20,11 +20,30 @@ vim.opt.rtp:prepend(lazypath)
 vim.opt.termguicolors = true
 
 -- Share Neovim's clipboard with the Windows clipboard under WSL.
-if vim.fn.has("wsl") == 1
-    and vim.fn.executable("clip.exe") == 1
-    and vim.fn.executable("powershell.exe") == 1 then
+local function find_windows_executable(name, windows_path)
+  local path = vim.fn.exepath(name)
+  if path ~= "" then
+    return path
+  end
+
+  -- WSL may not import Windows directories into PATH. Look on mounted drives
+  -- as well, which also works when appendWindowsPath is disabled.
+  for _, candidate in ipairs(vim.fn.glob("/mnt/*/Windows/" .. windows_path, false, true)) do
+    if vim.fn.executable(candidate) == 1 then
+      return candidate
+    end
+  end
+end
+
+local clip = find_windows_executable("clip.exe", "System32/clip.exe")
+local powershell = find_windows_executable(
+  "powershell.exe",
+  "System32/WindowsPowerShell/v1.0/powershell.exe"
+)
+
+if vim.fn.has("wsl") == 1 and clip and powershell then
   local paste_command = {
-    "powershell.exe",
+    powershell,
     "-NoLogo",
     "-NoProfile",
     "-Command",
@@ -34,8 +53,8 @@ if vim.fn.has("wsl") == 1
   vim.g.clipboard = {
     name = "WslClipboard",
     copy = {
-      ["+"] = "clip.exe",
-      ["*"] = "clip.exe",
+      ["+"] = { clip },
+      ["*"] = { clip },
     },
     paste = {
       ["+"] = paste_command,
