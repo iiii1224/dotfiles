@@ -35,13 +35,22 @@ local function find_windows_executable(name, windows_path)
   end
 end
 
-local clip = find_windows_executable("clip.exe", "System32/clip.exe")
 local powershell = find_windows_executable(
   "powershell.exe",
   "System32/WindowsPowerShell/v1.0/powershell.exe"
 )
 
-if vim.fn.has("wsl") == 1 and clip and powershell then
+if vim.fn.has("wsl") == 1 and powershell then
+  -- clip.exe reads piped text using the Windows system code page. Decode the
+  -- UTF-8 bytes from Neovim explicitly, then give PowerShell a Unicode string.
+  local copy_command = {
+    powershell,
+    "-NoLogo",
+    "-NoProfile",
+    "-Command",
+    "$reader = [System.IO.StreamReader]::new([Console]::OpenStandardInput(), [System.Text.Encoding]::UTF8); $text = $reader.ReadToEnd(); Set-Clipboard -Value $text",
+  }
+
   local paste_command = {
     powershell,
     "-NoLogo",
@@ -53,8 +62,8 @@ if vim.fn.has("wsl") == 1 and clip and powershell then
   vim.g.clipboard = {
     name = "WslClipboard",
     copy = {
-      ["+"] = { clip },
-      ["*"] = { clip },
+      ["+"] = copy_command,
+      ["*"] = copy_command,
     },
     paste = {
       ["+"] = paste_command,
