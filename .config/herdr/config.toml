@@ -76,7 +76,7 @@ description = "open vscode in the current directory"
 [[keys.command]]
 key = "prefix+shift+e"
 type = "shell"
-command = "explorer.exe ."
+command = "/mnt/c/Windows/explorer.exe ."
 description = "open explorer in the current directory"
 
 [[keys.command]]
