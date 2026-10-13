@@ -54,7 +54,7 @@ next_tab = "alt+shift+l"
 [[keys.command]]
 key = "prefix+shift+g"
 type = "popup"
-command = "lazygit"
+command = "exec \"$HOME/.local/share/mise/shims/lazygit\""
 description = "open lazygit"
 width = "80%"
 height = "80%"
