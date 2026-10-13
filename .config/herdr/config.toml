@@ -82,7 +82,7 @@ description = "open explorer in the current directory"
 [[keys.command]]
 key = "prefix+<"
 type = "popup"
-command = "exec nvim \"$HOME/.config/herdr/config.toml\""
+command = "exec \"$HOME/.local/share/mise/shims/nvim\" \"$HOME/.config/herdr/config.toml\""
 width = "80%"
 height = "80%"
 
